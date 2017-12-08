@@ -1,8 +1,7 @@
 # Ludus
 
 # About
-In a nutshell, Ludus is an open-source application that provides algorithms related to max-plus automata. 
-Ludus is built with Java, and can be used as a back-end for performance analysis of supervisory controllers.
+In a nutshell, Ludus is an open-source application that implements max-plus automata, ratio games, mean-payoff games and various graph-related algorithms. Ludus is built with Java, and can be used as a back-end for performance analysis of supervisory controllers.
 
 # Source
 The latest source of Ludus can be found on [GitHub].
