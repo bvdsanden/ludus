@@ -1,0 +1,15 @@
+<assembly>
+    <id>distribution</id>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <formats>
+        <format>zip</format>
+    </formats>
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>backend</outputDirectory>
+            <unpack>false</unpack>
+        </dependencySet>
+    </dependencySets>
+</assembly>

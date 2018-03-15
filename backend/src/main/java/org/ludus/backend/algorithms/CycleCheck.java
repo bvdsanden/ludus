@@ -22,8 +22,8 @@ public final class CycleCheck {
      * @return true iff the graph contains a cycle
      */
     public static <V, E> boolean check(Graph<V, E> graph) {
-        Set<V> unmarked = new HashSet(graph.getVertices());
-        Set<V> tempMarked = new HashSet();
+        Set<V> unmarked = new HashSet<>(graph.getVertices());
+        Set<V> tempMarked = new HashSet<>();
         try {
             while (!unmarked.isEmpty()) {
                 V v = unmarked.iterator().next();

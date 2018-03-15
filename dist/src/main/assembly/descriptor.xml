@@ -1,0 +1,13 @@
+<assembly>
+    <id>distribution</id>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <formats>
+        <format>dir</format>
+    </formats>
+    <dependencySets>
+        <dependencySet>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+            <unpack>true</unpack>
+        </dependencySet>
+    </dependencySets>
+</assembly>

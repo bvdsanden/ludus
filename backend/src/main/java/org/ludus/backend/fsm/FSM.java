@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * Finite-state machine with controllable and uncontrollable events.
+ * Finite-state machine with marked states and controllable and uncontrollable events.
  *
  * @author Bram van der Sanden
  */
@@ -34,4 +34,6 @@ public interface FSM<V, E> extends Graph<V, E> {
     Collection<E> getEdges(V source, V target);
 
     E getEdge(V source, V target, String event);
+
+    boolean isMarked(V v);
 }

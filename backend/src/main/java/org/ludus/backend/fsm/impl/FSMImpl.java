@@ -13,17 +13,19 @@ import java.util.stream.Collectors;
  */
 public class FSMImpl implements FSM<Location, Edge> {
 
-    private final Set<Location> locations;
-    private final HashMap<String, Location> locMap;
+    private Set<Location> locations;
+    private Set<Location> markedLocations;
+    private HashMap<String, Location> locMap;
     private Location initial;
 
-    Map<Location, Set<Edge>> outgoingMap;
+    private Map<Location, Set<Edge>> outgoingMap;
 
-    private final Set<String> controllable;
-    private final Set<String> uncontrollable;
+    private Set<String> controllable;
+    private Set<String> uncontrollable;
 
     public FSMImpl() {
         locations = new LinkedHashSet<>();
+        markedLocations = new HashSet<>();
         locMap = new HashMap<>();
         controllable = new HashSet<>();
         uncontrollable = new HashSet<>();
@@ -148,6 +150,26 @@ public class FSMImpl implements FSM<Location, Edge> {
         return null;
     }
 
+    public boolean isMarked(Location l) {
+        return markedLocations.contains(l);
+    }
+
+    public void setMarked(Location... l) {
+        for (Location loc : l) {
+            markedLocations.add(loc);
+        }
+    }
+
+    public void unsetMarked(Location... l) {
+        for (Location loc : l) {
+            markedLocations.remove(loc);
+        }
+    }
+
+    public Set<Location> getMarkedVertices() {
+        return markedLocations;
+    }
+
     @Override
     public String getEvent(Edge e) {
         return e.getEvent();
@@ -169,5 +191,45 @@ public class FSMImpl implements FSM<Location, Edge> {
     @Override
     public boolean hasEdge(Location source, Location target, String event) {
         return outgoingEdgesOf(source).stream().anyMatch(e -> e.getTarget().equals(target) && e.getEvent().equals(event));
+    }
+
+    /**
+     * Return a deep clone of the original fsm.
+     *
+     * @param fsm input FSM
+     * @return deep clone
+     */
+    public static FSMImpl clone(FSM<Location,Edge> fsm) {
+        FSMImpl newFSM = new FSMImpl();
+
+        // Copy the events.
+        for (String uEvent : fsm.getUncontrollable()) {
+            newFSM.addUncontrollable(uEvent);
+        }
+        for (String cEvent : fsm.getControllable()) {
+            newFSM.addControllable(cEvent);
+        }
+
+        // Copy the locations.
+        newFSM.markedLocations = new HashSet<>();
+        Location initial = fsm.getInitial();
+        for (Location l : fsm.getVertices()) {
+            Location lNew = new Location(l.getName());
+            newFSM.addLocation(lNew);
+            if(l.equals(initial)) {
+                newFSM.setInitial(lNew);
+            }
+            if(fsm.isMarked(l)) {
+                newFSM.markedLocations.add(lNew);
+            }
+        }
+
+        // Copy the edges.
+        for (Edge edge : fsm.getEdges()) {
+            String srcName = edge.getSource().getName();
+            String tgtName = edge.getTarget().getName();
+            newFSM.addEdge(newFSM.getLocation(srcName),newFSM.getLocation(tgtName),edge.getEvent());
+        }
+        return newFSM;
     }
 }

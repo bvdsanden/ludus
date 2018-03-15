@@ -1,6 +1,7 @@
-package org.ludus.backend.fsm;
+package org.ludus.backend.por;
 
 import org.junit.jupiter.api.Test;
+import org.ludus.backend.fsm.FSM;
 import org.ludus.backend.fsm.impl.Edge;
 import org.ludus.backend.fsm.impl.FSMImpl;
 import org.ludus.backend.fsm.impl.Location;

@@ -177,7 +177,7 @@ public class ValueIterationReductionInt {
                 // Check if within range.
                 if (pm.compareTo(lowerBound) != -1 && pm.compareTo(upperBound) != 1) {
                     // pm > min.
-                    if (pm.compareTo(min) > 0) {
+                    if (pm.compareTo(min) < 0) {
                         // Smaller fraction found, satisfying the range.
                         min = pm;
                     }
@@ -191,10 +191,10 @@ public class ValueIterationReductionInt {
      * Reweight each weight in the function to {@code multiplyConstant}*weight +
      * {@code addConstant}.
      *
-     * @param game game graph
-     * @param multiplyConstant constant to multiply
-     * @param addConstant constant to add
-     * @return new weight function weight(e) = multiplyConstant * weight(e) + addConstant
+     * @param game
+     * @param multiplyConstant
+     * @param addConstant
+     * @return
      */
     private static <V, E> SingleWeightFunctionInt<E> reweight(MeanPayoffGameEnergy<V, E, Integer> game, Integer multiplyConstant, Integer addConstant) {
         // Create an explicit single weight function.

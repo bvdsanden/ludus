@@ -1,22 +1,21 @@
-package org.ludus.backend.fsm;
+package org.ludus.backend.por;
 
 import org.junit.jupiter.api.Test;
 import org.ludus.backend.algebra.DenseMatrix;
 import org.ludus.backend.algebra.Matrix;
 import org.ludus.backend.algorithms.Howard;
 import org.ludus.backend.datastructures.tuple.Tuple;
+import org.ludus.backend.fsm.FSM;
+import org.ludus.backend.fsm.FSMComposition;
 import org.ludus.backend.fsm.impl.Edge;
 import org.ludus.backend.fsm.impl.FSMImpl;
 import org.ludus.backend.fsm.impl.Location;
-import org.ludus.backend.por.AmplePOR;
-import org.ludus.backend.por.ClusterPOR;
 import org.ludus.backend.por.DependencyGraph;
+import org.ludus.backend.por.StubbornPOR;
 import org.ludus.backend.statespace.ComputeStateSpace;
-import org.ludus.backend.statespace.DOTGenerator;
 import org.ludus.backend.statespace.MaxPlusStateSpace;
 import org.ludus.backend.statespace.Transition;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -24,11 +23,11 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class RTASTest {
+public class RTASStubbornTest {
 
     private Map<String, Matrix> mapping;
 
-    public RTASTest() {
+    public RTASStubbornTest() {
         Double MININF = Double.NEGATIVE_INFINITY;
         Matrix matrixA = new DenseMatrix(3, 3,
                 4.0, 5.0, MININF,
@@ -96,47 +95,36 @@ public class RTASTest {
         FSMComposition composer = new FSMComposition();
         FSM<Location, Edge> composition = composer.compute(Arrays.asList(fsm1, fsm2, fsm3));
 
-        ClusterPOR cpor = new ClusterPOR();
-        FSM<Location, Edge> fsmCluster = cpor.compute(Arrays.asList(fsm1, fsm2, fsm3), depGraph);
-
-        AmplePOR apor = new AmplePOR();
-        FSM<Location, Edge> fsmAmple = apor.compute(Arrays.asList(fsm1, fsm2, fsm3), depGraph);
-
+        StubbornPOR cpor = new StubbornPOR();
+        FSM<Location, Edge> fsmStubborn = cpor.compute(Arrays.asList(fsm1, fsm2, fsm3), depGraph);
 
         // State space.
         MaxPlusStateSpace statespace = ComputeStateSpace.computeMaxPlusStateSpace(composition, 3, mapping);
-        MaxPlusStateSpace statespaceAmple = ComputeStateSpace.computeMaxPlusStateSpace(fsmAmple, 3, mapping);
-        MaxPlusStateSpace statespaceCluster = ComputeStateSpace.computeMaxPlusStateSpace(fsmCluster, 3, mapping);
+        MaxPlusStateSpace statespaceStubborn = ComputeStateSpace.computeMaxPlusStateSpace(fsmStubborn, 3, mapping);
 
         printStateSpace(statespace);
-        printStateSpace(statespaceAmple);
-        printStateSpace(statespaceCluster);
+        printStateSpace(statespaceStubborn);
 
         // Print state space.
-        DOTGenerator gen = new DOTGenerator();
-        File f = new File("/home/bram/Desktop/rtas.dot");
-        gen.generate(statespace, f);
+        //DOTGenerator gen = new DOTGenerator();
+        //File f = new File("/home/bram/Desktop/rtas.dot");
+        //gen.generate(statespace,f);
 
         // Get SCC.
         MaxPlusStateSpace statespaceSCC = ComputeStateSpace.getSCCs(statespace).get(0);
-        MaxPlusStateSpace statespaceAmpleSCC = ComputeStateSpace.getSCCs(statespaceAmple).get(0);
-        MaxPlusStateSpace statespaceClusterSCC = ComputeStateSpace.getSCCs(statespaceCluster).get(0);
+        MaxPlusStateSpace statespacesStubbornSCC = ComputeStateSpace.getSCCs(statespaceStubborn).get(0);
 
         // Analyze throughput.
         Tuple<Double, List<Transition>> howardFull = Howard.runHoward(statespaceSCC, 0.0);
-        Tuple<Double, List<Transition>> howardAmple = Howard.runHoward(statespaceAmpleSCC, 0.0);
-        Tuple<Double, List<Transition>> howardCluster = Howard.runHoward(statespaceClusterSCC, 0.0);
+        Tuple<Double, List<Transition>> howardStubborn = Howard.runHoward(statespacesStubbornSCC, 0.0);
 
-        assertEquals(howardFull.getLeft(), howardAmple.getLeft());
-        assertEquals(howardFull.getLeft(), howardCluster.getLeft());
+        assertEquals(howardFull.getLeft(), howardStubborn.getLeft());
 
         // Minimum throughput.
         Tuple<Double, List<Transition>> howardFull_min = Howard.runHoward(ComputeStateSpace.swapWeights(statespaceSCC));
-        Tuple<Double, List<Transition>> howardAmple_min = Howard.runHoward(ComputeStateSpace.swapWeights(statespaceAmpleSCC));
-        Tuple<Double, List<Transition>> howardCluster_min = Howard.runHoward(ComputeStateSpace.swapWeights(statespaceClusterSCC));
+        Tuple<Double, List<Transition>> howardStubborn_min = Howard.runHoward(ComputeStateSpace.swapWeights(statespacesStubbornSCC));
 
-        assertEquals(howardFull_min.getLeft(), howardAmple_min.getLeft());
-        assertEquals(howardFull_min.getLeft(), howardCluster_min.getLeft());
+        assertEquals(howardFull_min.getLeft(), howardStubborn_min.getLeft());
         System.out.println("Minimum throughput: " + howardFull_min.getRight().toString());
     }
 

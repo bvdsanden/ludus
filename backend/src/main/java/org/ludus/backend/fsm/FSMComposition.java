@@ -201,6 +201,38 @@ public class FSMComposition {
     }
 
     /**
+     * Check if a given state in the composition is marked.
+     *
+     * @param fsmList list of the individual FSMs
+     * @param state   current state in the composition
+     * @return true if the state in all individual automata is marked
+     */
+    public static boolean isMarked(List<FSM<Location, Edge>> fsmList, List<Location> state) {
+        for (int fsmId = 0; fsmId < fsmList.size(); fsmId++) {
+            FSM<Location, Edge> fsm = fsmList.get(fsmId);
+            if(!fsm.isMarked(state.get(fsmId))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check whether the given event is invisible.
+     * An event is considered invisible if and only if the marked status of the target state
+     * is the same as the given state.
+     *
+     * @param fsmList list of the individual FSMs
+     * @param state   current state in the composition
+     * @param event   event to execute
+     * @return true iff the marked status of {@code state} is the same as the marked status of the target state
+     */
+    public static boolean isInvisible(List<FSM<Location, Edge>> fsmList, List<Location> state, String event) {
+        List<Location> targetState = getEdgeTarget(fsmList,state,event);
+        return isMarked(fsmList,state) == isMarked(fsmList,targetState);
+    }
+
+    /**
      * Get the new location after executing the given event in the composition.
      *
      * @param fsmList list of the individual automata
